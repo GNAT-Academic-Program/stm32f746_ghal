@@ -1,0 +1,53 @@
+name = "stm32f746"
+description = "Bare-metal Ada/SPARK board support for the STM32F746"
+version = "0.1.0-dev"
+
+authors = ["Olivier Henley"]
+maintainers = ["Olivier Henley <olivier.henley@gmail.com>"]
+maintainers-logins = ["ohenley"]
+licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
+website = ""
+tags = ["embedded", "stm32", "cortex-m7", "bare-metal"]
+
+[[depends-on]]
+light_tasking_stm32f746 = "*"
+gpio_generic            = "*"
+i2c_generic             = "*"
+usart_generic           = "*"
+spi_generic             = "*"
+gnat_arm_elf            = "*"
+#machine_types           = "*"
+debug_generic           = "*"
+
+[[pins]]
+gpio_generic  = { url = "https://github.com/GNAT-Academic-Program/gpio_generic.git", branch = "main" }
+i2c_generic   = { url = "https://github.com/GNAT-Academic-Program/i2c_generic.git", branch = "main" }
+usart_generic = { url = "https://github.com/GNAT-Academic-Program/usart_generic.git", branch = "main" }
+spi_generic   = { url = "https://github.com/GNAT-Academic-Program/spi_generic.git", branch = "main" }
+#machine_types = { url = "https://github.com/GNAT-Academic-Program/machine_types.git", branch = "main" }
+debug_generic = { url = "https://github.com/GNAT-Academic-Program/debug_generic.git", branch = "main" }
+light_tasking_stm32f746 = { path = "/home/henley/Desktop/embedded_ada/stm32f7_workspace/stm32f746-runtimes/install/light-tasking-stm32f746/" }
+
+# ----------------------------------------------------------------------------
+# Clock configuration variables
+#
+# Values reflect the STM32F746 clock tree (RM0385). The main PLL feeds
+# SYSCLK from its P output; the VCO input (HSx / PLL_M) must sit in the
+# 1-2 MHz window and the VCO output (* PLL_N) in 100-432 MHz.
+#
+# Consumers (e.g. Clock_Tree) read these via the Alire-generated
+# stm32f746_Config package.
+# ----------------------------------------------------------------------------
+
+[configuration.variables]
+SYSCLK_Src = { type = "Enum",    values = ["HSI", "HSE", "PLLCLK"],                         default = "HSI"   }
+PLL_Src    = { type = "Enum",    values = ["HSI", "HSE"],                                   default = "HSI"   }
+HSE_Hz     = { type = "Integer", first  = 0,   last = 26_000_000,                          default = 0       }
+PLL_M_Div  = { type = "Integer", first  = 2,   last = 63,                                  default = 16      }
+PLL_N_Mul  = { type = "Integer", first  = 50,  last = 432,                                 default = 192     }
+PLL_P_Div  = { type = "Enum",    values = ["DIV2", "DIV4", "DIV6", "DIV8"],                default = "DIV2"  }
+PLL_Q_Div  = { type = "Integer", first  = 2,   last = 15,                                  default = 4       }
+AHB_Pre    = { type = "Enum",    values = ["DIV1", "DIV2", "DIV4", "DIV8", "DIV16",
+                                           "DIV64", "DIV128", "DIV256", "DIV512"],          default = "DIV1"  }
+APB1_Pre   = { type = "Enum",    values = ["DIV1", "DIV2", "DIV4", "DIV8", "DIV16"],        default = "DIV4"  }
+APB2_Pre   = { type = "Enum",    values = ["DIV1", "DIV2", "DIV4", "DIV8", "DIV16"],        default = "DIV2"  }
