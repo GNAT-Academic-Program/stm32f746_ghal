@@ -26,7 +26,7 @@ usart_generic = { url = "https://github.com/GNAT-Academic-Program/usart_generic.
 spi_generic   = { url = "https://github.com/GNAT-Academic-Program/spi_generic.git", branch = "main" }
 #machine_types = { url = "https://github.com/GNAT-Academic-Program/machine_types.git", branch = "main" }
 debug_generic = { url = "https://github.com/GNAT-Academic-Program/debug_generic.git", branch = "main" }
-light_tasking_stm32f746 = { path = "/home/henley/Desktop/embedded_ada/stm32f7_workspace/stm32f746-runtimes/install/light-tasking-stm32f746/" }
+light_tasking_stm32f746 = { url = "https://github.com/GNAT-Academic-Program/light-tasking-stm32f746.git", branch = "main" }
 
 # ----------------------------------------------------------------------------
 # Clock configuration variables
