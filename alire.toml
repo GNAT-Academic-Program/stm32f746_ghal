@@ -51,3 +51,6 @@ AHB_Pre    = { type = "Enum",    values = ["DIV1", "DIV2", "DIV4", "DIV8", "DIV1
                                            "DIV64", "DIV128", "DIV256", "DIV512"],          default = "DIV1"  }
 APB1_Pre   = { type = "Enum",    values = ["DIV1", "DIV2", "DIV4", "DIV8", "DIV16"],        default = "DIV4"  }
 APB2_Pre   = { type = "Enum",    values = ["DIV1", "DIV2", "DIV4", "DIV8", "DIV16"],        default = "DIV2"  }
+
+[[depends-on]]
+gnatprove = "^15.1.0"

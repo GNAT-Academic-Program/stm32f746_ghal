@@ -15,6 +15,11 @@ project Stm32f746 is
    for Create_Missing_Dirs use "True";
    for Library_Dir use "lib";
 
+   package Prove is
+      for Proof_Switches ("Ada") use
+        ("--no-subprojects", "-U");
+   end Prove;
+
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=
      external ("STM32F746_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
