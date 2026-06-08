@@ -1,4 +1,4 @@
-package body STM32F746_I2C is
+package body STM32F746_I2C with SPARK_Mode => On is
 
    use stm32f746;
 

@@ -8,7 +8,7 @@ generic
    with function  Get_Clock return Natural;
    with procedure RCC_Enable;
    with procedure RCC_Reset;
-package STM32F746_I2C is
+package STM32F746_I2C with SPARK_Mode => On is
 
    type Device is limited private;
 
