@@ -118,16 +118,26 @@ package body STM32F746_I2C with SPARK_Mode => On is
    end Recover;
 
    ---------------------------------------------------------------------------
+   --  Each ISR flag is read once into a local (non-interfering context): a
+   --  volatile function result may only be the RHS of an assignment, never an
+   --  operand in a larger expression. That is Async_Writers enforced by the
+   --  language -- you cannot silently read a hardware flag twice in one
+   --  boolean expression.
+   ---------------------------------------------------------------------------
 
    procedure Check_Errors (Op : String) is
+      F_Nack : constant Boolean := Port.Nacked;
+      F_Berr : constant Boolean := Port.Berr;
+      F_Arlo : constant Boolean := Port.Arlo;
+      F_Ovr  : constant Boolean := Port.Ovr;
    begin
-      if Port.Nacked then
+      if F_Nack then
          Fault (Op & ": NACK");
-      elsif Port.Berr then
+      elsif F_Berr then
          Fault (Op & ": bus error");
-      elsif Port.Arlo then
+      elsif F_Arlo then
          Fault (Op & ": arbitration lost");
-      elsif Port.Ovr then
+      elsif F_Ovr then
          Fault (Op & ": overrun");
       end if;
    end Check_Errors;
@@ -136,14 +146,22 @@ package body STM32F746_I2C with SPARK_Mode => On is
                     Target : I2C_Types.I2C_Address;
                     Result : out I2C_Types.Ack_State) is
       pragma Unreferenced (Dev);
-      Done : Boolean := False;
+      Enabled : Boolean;
+      Bsy     : Boolean;
+      Stop_F  : Boolean;
+      Nack_F  : Boolean;
    begin
       Result := I2C_Types.Nak;
 
-      if not Port.PE_On then Port.Recover_Ctrl; end if;
-      if not Port.PE_On then return; end if;
-      if Port.Busy       then Port.Recover_Ctrl; end if;
-      if Port.Busy       then return; end if;
+      Enabled := Port.PE_On;
+      if not Enabled then Port.Recover_Ctrl; end if;
+      Enabled := Port.PE_On;
+      if not Enabled then return; end if;
+
+      Bsy := Port.Busy;
+      if Bsy then Port.Recover_Ctrl; end if;
+      Bsy := Port.Busy;
+      if Bsy then return; end if;
 
       Port.Clear_Status;
 
@@ -154,14 +172,14 @@ package body STM32F746_I2C with SPARK_Mode => On is
                   Auto_End => True);
 
       for Count in 1 .. Timeout_Loops loop
-         if Port.Stopped or else Port.Nacked then
-            Done := True;
-            exit;
-         end if;
+         Stop_F := Port.Stopped;
+         Nack_F := Port.Nacked;
+         exit when Stop_F or else Nack_F;
       end loop;
-      pragma Unreferenced (Done);
 
-      if not Port.Nacked and then Port.Stopped then
+      Stop_F := Port.Stopped;
+      Nack_F := Port.Nacked;
+      if not Nack_F and then Stop_F then
          Result := I2C_Types.Ack;
       end if;
 
@@ -182,18 +200,24 @@ package body STM32F746_I2C with SPARK_Mode => On is
                           Length : Natural;
                           Stop   : Boolean) is
       pragma Unreferenced (Dev);
+      Enabled : Boolean;
+      Bsy     : Boolean;
    begin
       if Length not in 1 .. 255 then
          Fault ("Begin_Write: invalid length");
       end if;
 
-      if not Port.PE_On then Port.Recover_Ctrl; end if;
-      if not Port.PE_On then
+      Enabled := Port.PE_On;
+      if not Enabled then Port.Recover_Ctrl; end if;
+      Enabled := Port.PE_On;
+      if not Enabled then
          Fault ("Begin_Write: peripheral not enabled");
       end if;
 
-      if Port.Busy then Port.Recover_Ctrl; end if;
-      if Port.Busy then
+      Bsy := Port.Busy;
+      if Bsy then Port.Recover_Ctrl; end if;
+      Bsy := Port.Busy;
+      if Bsy then
          Fault ("Begin_Write: bus busy");
       end if;
 
@@ -210,13 +234,16 @@ package body STM32F746_I2C with SPARK_Mode => On is
                          Length : Natural;
                          Stop   : Boolean) is
       pragma Unreferenced (Dev);
+      Enabled : Boolean;
    begin
       if Length not in 1 .. 255 then
          Fault ("Begin_Read: invalid length");
       end if;
 
-      if not Port.PE_On then Port.Recover_Ctrl; end if;
-      if not Port.PE_On then
+      Enabled := Port.PE_On;
+      if not Enabled then Port.Recover_Ctrl; end if;
+      Enabled := Port.PE_On;
+      if not Enabled then
          Fault ("Begin_Read: peripheral not enabled");
       end if;
 
@@ -242,12 +269,22 @@ package body STM32F746_I2C with SPARK_Mode => On is
       Ready : Boolean := False;
    begin
       for Count in 1 .. Timeout_Loops loop
-         if Port.TXIS then
-            Ready := True;
-            exit;
-         end if;
-         exit when Port.Nacked or else Port.Berr
-                or else Port.Arlo or else Port.Ovr;
+         declare
+            F_TXIS : constant Boolean := Port.TXIS;
+         begin
+            if F_TXIS then
+               Ready := True;
+               exit;
+            end if;
+         end;
+         declare
+            F_Nack : constant Boolean := Port.Nacked;
+            F_Berr : constant Boolean := Port.Berr;
+            F_Arlo : constant Boolean := Port.Arlo;
+            F_Ovr  : constant Boolean := Port.Ovr;
+         begin
+            exit when F_Nack or else F_Berr or else F_Arlo or else F_Ovr;
+         end;
       end loop;
 
       Check_Errors ("Send");
@@ -271,12 +308,22 @@ package body STM32F746_I2C with SPARK_Mode => On is
       B := 0;
 
       for Count in 1 .. Timeout_Loops loop
-         if Port.RXNE then
-            Ready := True;
-            exit;
-         end if;
-         exit when Port.Nacked or else Port.Berr
-                or else Port.Arlo or else Port.Ovr;
+         declare
+            F_RXNE : constant Boolean := Port.RXNE;
+         begin
+            if F_RXNE then
+               Ready := True;
+               exit;
+            end if;
+         end;
+         declare
+            F_Nack : constant Boolean := Port.Nacked;
+            F_Berr : constant Boolean := Port.Berr;
+            F_Arlo : constant Boolean := Port.Arlo;
+            F_Ovr  : constant Boolean := Port.Ovr;
+         begin
+            exit when F_Nack or else F_Berr or else F_Arlo or else F_Ovr;
+         end;
       end loop;
 
       Check_Errors ("Recv");
