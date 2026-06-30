@@ -1,6 +1,7 @@
 with "config/stm32f746_config.gpr";
 with "ravenscar_build.gpr";
 with "runtime_build.gpr";
+with "cortex_m";
 project Stm32f746 is
 
    for Target use runtime_build'Target;

@@ -108,11 +108,20 @@ package body STM32F746_GPIO is
 
    procedure Write_AFR (Dev   : Pin;
                         AF    : Gpio_Types.Alternate_Function) is
+      AF_Val : constant UInt32 := UInt32 (AF);
+      Shift  : Natural;
+      Mask   : UInt32;
    begin
       if Dev.Nbr <= 7 then
-         Dev.Periph.AFRL.Arr (Dev.Nbr) := stm32f746.UInt4 (AF);
+         Shift := Natural (Dev.Nbr) * 4;
+         Mask  := Shift_Left (16#F#, Shift);
+         Dev.Periph.AFRL.Val :=
+           (Dev.Periph.AFRL.Val and not Mask) or Shift_Left (AF_Val, Shift);
       else
-         Dev.Periph.AFRH.Arr (Dev.Nbr) := stm32f746.UInt4 (AF);
+         Shift := Natural (Dev.Nbr - 8) * 4;
+         Mask  := Shift_Left (16#F#, Shift);
+         Dev.Periph.AFRH.Val :=
+           (Dev.Periph.AFRH.Val and not Mask) or Shift_Left (AF_Val, Shift);
       end if;
    end;
 

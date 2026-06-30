@@ -25,6 +25,8 @@ package STM32F746.RCC is
    subtype CR_PLLRDY_Field is STM32F746.Bit;
    subtype CR_PLLI2SON_Field is STM32F746.Bit;
    subtype CR_PLLI2SRDY_Field is STM32F746.Bit;
+   subtype CR_PLLSAION_Field is STM32F746.Bit;
+   subtype CR_PLLSAIRDY_Field is STM32F746.Bit;
 
    --  clock control register
    type CR_Register is record
@@ -56,8 +58,12 @@ package STM32F746.RCC is
       PLLI2SON       : CR_PLLI2SON_Field := 16#0#;
       --  Read-only. PLLI2S clock ready flag
       PLLI2SRDY      : CR_PLLI2SRDY_Field := 16#0#;
+      --  PLLSAI enable
+      PLLSAION       : CR_PLLSAION_Field := 16#0#;
+      --  Read-only. PLLSAI clock ready flag
+      PLLSAIRDY      : CR_PLLSAIRDY_Field := 16#0#;
       --  unspecified
-      Reserved_28_31 : STM32F746.UInt4 := 16#0#;
+      Reserved_30_31 : STM32F746.UInt2 := 16#0#;
    end record
      with Volatile_Full_Access, Object_Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -77,7 +83,9 @@ package STM32F746.RCC is
       PLLRDY         at 0 range 25 .. 25;
       PLLI2SON       at 0 range 26 .. 26;
       PLLI2SRDY      at 0 range 27 .. 27;
-      Reserved_28_31 at 0 range 28 .. 31;
+      PLLSAION       at 0 range 28 .. 28;
+      PLLSAIRDY      at 0 range 29 .. 29;
+      Reserved_30_31 at 0 range 30 .. 31;
    end record;
 
    --  PLLCFGR_PLLM array element

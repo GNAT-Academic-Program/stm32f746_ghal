@@ -66,15 +66,7 @@ package body STM32F746_I2C with SPARK_Mode => On is
 
    ---------------------------------------------------------------------------
 
-   function Make_Device return Device is
-   begin
-      return Dev : Device;   --  null record
-   end Make_Device;
-
-   ---------------------------------------------------------------------------
-
-   procedure Init (Dev : in out Device; Cfg : I2C_Types.I2C_Config) is
-      pragma Unreferenced (Dev);
+   procedure Init (Cfg : I2C_Types.I2C_Config) is
       R : constant Timing_Result := Timing_For (Get_Clock, Cfg.Speed);
    begin
       if not R.Valid then
@@ -92,29 +84,26 @@ package body STM32F746_I2C with SPARK_Mode => On is
       Port.Set_PE (On => True);
    end Init;
 
-   procedure Enable (Dev : in out Device) is
-      pragma Unreferenced (Dev);
+   procedure Enable is
    begin
       Port.Set_PE (On => True);
    end Enable;
 
-   procedure Disable (Dev : in out Device) is
-      pragma Unreferenced (Dev);
+   procedure Disable is
    begin
       Port.Set_PE (On => False);
    end Disable;
 
-   procedure Reset (Dev : in out Device) is
-      pragma Unreferenced (Dev);
+   procedure Reset is
    begin
       RCC_Reset;
    end Reset;
 
-   procedure Recover (Dev : in out Device) is
+   procedure Recover is
    begin
-      Disable (Dev);
-      Reset   (Dev);
-      Enable  (Dev);
+      Disable;
+      Reset;
+      Enable;
    end Recover;
 
    ---------------------------------------------------------------------------
@@ -142,10 +131,8 @@ package body STM32F746_I2C with SPARK_Mode => On is
       end if;
    end Check_Errors;
 
-   procedure Probe (Dev    : in out Device;
-                    Target : I2C_Types.I2C_Address;
+   procedure Probe (Target : I2C_Types.I2C_Address;
                     Result : out I2C_Types.Ack_State) is
-      pragma Unreferenced (Dev);
       Enabled : Boolean;
       Bsy     : Boolean;
       Stop_F  : Boolean;
@@ -195,11 +182,9 @@ package body STM32F746_I2C with SPARK_Mode => On is
    --                                   address type and gnatprove flags 2046.
    ---------------------------------------------------------------------------
 
-   procedure Begin_Write (Dev    : in out Device;
-                          Target : I2C_Types.I2C_Address;
+   procedure Begin_Write (Target : I2C_Types.I2C_Address;
                           Length : Natural;
                           Stop   : Boolean) is
-      pragma Unreferenced (Dev);
       Enabled : Boolean;
       Bsy     : Boolean;
    begin
@@ -229,11 +214,9 @@ package body STM32F746_I2C with SPARK_Mode => On is
                   Auto_End => Stop);
    end Begin_Write;
 
-   procedure Begin_Read (Dev    : in out Device;
-                         Target : I2C_Types.I2C_Address;
+   procedure Begin_Read (Target : I2C_Types.I2C_Address;
                          Length : Natural;
                          Stop   : Boolean) is
-      pragma Unreferenced (Dev);
       Enabled : Boolean;
    begin
       if Length not in 1 .. 255 then
@@ -264,8 +247,7 @@ package body STM32F746_I2C with SPARK_Mode => On is
    --  sets becomes a defined timeout (Bus_Fault) rather than a hang.
    ---------------------------------------------------------------------------
 
-   procedure Send (Dev : in out Device; B : Storage_Element) is
-      pragma Unreferenced (Dev);
+   procedure Send (B : Storage_Element) is
       Ready : Boolean := False;
    begin
       for Count in 1 .. Timeout_Loops loop
@@ -296,10 +278,8 @@ package body STM32F746_I2C with SPARK_Mode => On is
       Port.Put (B);
    end Send;
 
-   procedure Recv (Dev : in out Device;
-                   B   : out Storage_Element;
+   procedure Recv (B   : out Storage_Element;
                    Ack : Boolean) is
-      pragma Unreferenced (Dev);
       pragma Unreferenced (Ack);
       --  ACK/NACK is driven by AUTOEND/NBYTES in Begin_Read; no per-byte
       --  control needed in v2 I2C.

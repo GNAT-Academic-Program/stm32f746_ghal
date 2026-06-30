@@ -1,5 +1,5 @@
 name = "stm32f746"
-description = "Bare-metal Ada/SPARK board support for the STM32F746"
+description = "GHAL STM32F746 MCU drivers (GPIO, I2C, SPI, USART, RNG, LTDC, DMA2D)"
 version = "0.1.0-dev"
 
 authors = ["Olivier Henley"]
@@ -13,20 +13,23 @@ tags = ["embedded", "stm32", "cortex-m7", "bare-metal"]
 light_tasking_stm32f746 = "*"
 gpio_generic            = "*"
 i2c_generic             = "*"
+rng_generic             = "*"
 usart_generic           = "*"
 spi_generic             = "*"
 gnat_arm_elf            = "*"
-#machine_types           = "*"
+machine_types           = "*"
 debug_generic           = "*"
+bitmap                  = "*"
+dc_generic              = "*"
+cortex_m                = "*"
 
 [[pins]]
 gpio_generic  = { url = "https://github.com/GNAT-Academic-Program/gpio_generic.git", branch = "main" }
-i2c_generic   = { url = "https://github.com/GNAT-Academic-Program/i2c_generic.git", branch = "main" }
-usart_generic = { url = "https://github.com/GNAT-Academic-Program/usart_generic.git", branch = "main" }
-spi_generic   = { url = "https://github.com/GNAT-Academic-Program/spi_generic.git", branch = "main" }
-#machine_types = { url = "https://github.com/GNAT-Academic-Program/machine_types.git", branch = "main" }
+rng_generic   = { path = "../rng_generic" }
 debug_generic = { url = "https://github.com/GNAT-Academic-Program/debug_generic.git", branch = "main" }
 light_tasking_stm32f746 = { url = "https://github.com/GNAT-Academic-Program/light-tasking-stm32f746.git", branch = "main" }
+bitmap        = { path = "../bitmap" }
+dc_generic    = { path = "../dc_generic" }
 
 # ----------------------------------------------------------------------------
 # Clock configuration variables
@@ -38,6 +41,9 @@ light_tasking_stm32f746 = { url = "https://github.com/GNAT-Academic-Program/ligh
 # Consumers (e.g. Clock_Tree) read these via the Alire-generated
 # stm32f746_Config package.
 # ----------------------------------------------------------------------------
+
+[configuration.values]
+cortex_m.core = "m7f"
 
 [configuration.variables]
 SYSCLK_Src = { type = "Enum",    values = ["HSI", "HSE", "PLLCLK"],                         default = "HSI"   }
@@ -54,3 +60,12 @@ APB2_Pre   = { type = "Enum",    values = ["DIV1", "DIV2", "DIV4", "DIV8", "DIV1
 
 [[depends-on]]
 gnatprove = "^15.1.0"
+
+[[pins]]
+i2c_generic = { path='../i2c_generic' }
+
+[[pins]]
+usart_generic = { path='../usart_generic' }
+
+[[pins]]
+spi_generic = { path='../spi_generic' }
