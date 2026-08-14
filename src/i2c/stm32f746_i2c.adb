@@ -77,9 +77,11 @@ package body STM32F746_I2C with SPARK_Mode => On is
       RCC_Reset;
 
       Port.Set_PE (On => False);
-      Port.Program_Timing (PRESC  => R.T.PRESC, SCLDEL => R.T.SCLDEL,
+      Port.Program_Timing (PRESC  => R.T.PRESC, 
+                           SCLDEL => R.T.SCLDEL,
                            SDADEL => R.T.SDADEL,
-                           SCLH   => R.T.SCLH, SCLL => R.T.SCLL);
+                           SCLH   => R.T.SCLH, 
+                           SCLL   => R.T.SCLL);
       Port.Clear_Status;
       Port.Set_PE (On => True);
    end Init;
