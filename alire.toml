@@ -25,11 +25,12 @@ cortex_m                = "*"
 
 [[pins]]
 gpio_generic  = { url = "https://github.com/GNAT-Academic-Program/gpio_generic.git", branch = "main" }
-rng_generic   = { path = "../rng_generic" }
+rng_generic   = { url = "https://github.com/GNAT-Academic-Program/rng_generic.git", branch = "main" }
 debug_generic = { url = "https://github.com/GNAT-Academic-Program/debug_generic.git", branch = "main" }
 light_tasking_stm32f746 = { url = "https://github.com/GNAT-Academic-Program/light-tasking-stm32f746.git", branch = "main" }
-bitmap        = { path = "../bitmap" }
-dc_generic    = { path = "../dc_generic" }
+bitmap        = { url = "https://github.com/GNAT-Academic-Program/bitmap.git", branch = "main" }
+dc_generic    = { url = "https://github.com/GNAT-Academic-Program/dc_generic.git", branch = "main" }
+machine_types = { url = "https://github.com/GNAT-Academic-Program/machine_types.git", branch = "main" }
 
 # ----------------------------------------------------------------------------
 # Clock configuration variables
@@ -62,10 +63,10 @@ APB2_Pre   = { type = "Enum",    values = ["DIV1", "DIV2", "DIV4", "DIV8", "DIV1
 gnatprove = "^15.1.0"
 
 [[pins]]
-i2c_generic = { path='../i2c_generic' }
+i2c_generic = { url = "https://github.com/GNAT-Academic-Program/i2c_generic.git", branch = "main" }
 
 [[pins]]
-usart_generic = { path='../usart_generic' }
+usart_generic = { url = "https://github.com/GNAT-Academic-Program/usart_generic.git", branch = "main" }
 
 [[pins]]
-spi_generic = { path='../spi_generic' }
+spi_generic = { url = "https://github.com/GNAT-Academic-Program/spi_generic.git", branch = "main" }
